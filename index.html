@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Turno</title>
+    <link rel="stylesheet" href="estilo.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+</head>
+<body>
+   
+    <h1>Relatório de Turno</h1>
+     <div class="wrapper"> 
+    <form id="relatorioForm">
+        <div class="section">
+            <label>Data:
+                <input type="date" name="data" required>
+            </label>
+        </div>
+
+        <div class="section">
+            <label>Enviar sinal para o rádio:</label>
+            <button type="button" id="btnSinal">Enviar Sinal</button>
+            <ul id="sinais"></ul>
+        </div>
+
+        <div class="section">
+            <h2>Encomenda Entrada</h2>
+            <input type="text" id="entradaCasa" placeholder="Casa">
+            <input type="text" id="entradaNome" placeholder="Morador">
+            <input type="time" id="entradaHora">
+            <button type="button" id="addEntrada">Adicionar</button>
+            <ul id="listaEntrada"></ul>
+        </div>
+
+        <div class="section">
+            <h2>Encomenda na Portaria</h2>
+            <input type="text" id="portariaCasa" placeholder="Casa">
+            <input type="number" id="portariaQtd" placeholder="Qtd">
+            <select id="portariaStatus">
+                <option value="ok">ok</option>
+                <option value="verificando">verificando</option>
+            </select>
+            <button type="button" id="addPortaria">Adicionar</button>
+            <ul id="listaPortaria"></ul>
+        </div>
+
+        <div class="section">
+            <h2>Encomenda Saída</h2>
+            <input type="text" id="saidaCasa" placeholder="Casa">
+            <input type="text" id="saidaNome" placeholder="Morador">
+            <input type="time" id="saidaHora">
+            <button type="button" id="addSaida">Adicionar</button>
+            <ul id="listaSaida"></ul>
+        </div>
+<div class="section">
+  <h2>Retirada de Chaves</h2>
+  <input type="text" id="chaveLocal" placeholder="Local">
+  <input type="time" id="chaveHora">
+  <input type="text" id="chaveNome" placeholder="Morador">
+  <input type="text" id="chaveCasa" placeholder="Casa">
+  <button type="button" id="addChave">Registrar Retirada</button>
+  <ul id="listaChaves"></ul>
+</div>
+
+
+        <div class="section">
+            <h2>Lista de Convidados</h2>
+            <div id="convidadosContainer"></div>
+            <button type="button" id="novoMoradorConvidados">Novo Morador</button>
+        </div>
+
+        <div class="section">
+            <h2>Ocorrências</h2>
+            <div id="ocorrenciasContainer"></div>
+            <button type="button" id="novaOcorrencia">Nova Ocorrência</button>
+        </div>
+
+        <div class="section">
+    <h2>Mensagens WhatsApp</h2>
+    <input type="text" id="whatsMorador" placeholder="Morador">
+    <input type="text" id="whatsCasa" placeholder="Casa">
+    <input type="time" id="whatsHora">
+    <textarea id="whatsMensagem" placeholder="Mensagem enviada"></textarea>
+    <button type="button" id="addWhats">Adicionar Mensagem</button>
+    <ul id="listaWhats"></ul>
+</div>
+
+<div class="section">
+    <h2>Exportar Relatório</h2>
+    <button type="button" id="exportPDF">Exportar PDF</button>
+    <button type="button" id="exportCSV">Exportar CSV</button>
+</div>
+
+
+        <button type="submit" class="btn">Salvar Relatório</button>
+    </form>
+    <div id="mensagem"></div>
+    <script src="app.js"></script>
+    </div>
+</body>
+</html>
