@@ -230,24 +230,18 @@ if($id('exportCSV')) $id('exportCSV').addEventListener('click', function(){
   const linhas = [];
 
   let dataRelatorio = document.querySelector('input[type="date"]')?.value || "";
-
   if (dataRelatorio) {
-    const partes = dataRelatorio.split('-'); 
+    const partes = dataRelatorio.split('-');
     dataRelatorio = `${partes[2]}-${partes[1]}-${partes[0]}`;
   }
 
   const responsavel = "Wagner Toshio";
-
-  // Cabeçalho
   linhas.push(["Data", dataRelatorio]);
   linhas.push(["Responsável", responsavel]);
   linhas.push([]);
   linhas.push(["Seção","Conteúdo"]);
 
-  // Função para limpar texto
   const limpa = txt => (txt||"").split("\n").map(t=>t.trim()).filter(Boolean).join(" | ");
-
-  // Adiciona cada seção
   linhas.push(["Sinais", limpa(coletarLista('sinais'))]);
   linhas.push(["Encomenda Entrada", limpa(coletarLista('listaEntrada'))]);
   linhas.push(["Encomenda na Portaria", limpa(coletarLista('listaPortaria'))]);
@@ -257,11 +251,11 @@ if($id('exportCSV')) $id('exportCSV').addEventListener('click', function(){
   linhas.push(["Ocorrências", limpa(coletarOcorrencias())]);
   linhas.push(["Convidados", limpa(coletarConvidados())]);
 
-  // Monta CSV
   let csv = "";
   linhas.forEach(l=>{
     csv += l.map(c=>`"${(c||"").toString().replace(/"/g,'""')}"`).join(",") + "\n";
   });
+
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
@@ -270,6 +264,7 @@ if($id('exportCSV')) $id('exportCSV').addEventListener('click', function(){
   link.click();
   document.body.removeChild(link);
 });
+
 
 
   if($id('relatorioForm')) $id('relatorioForm').addEventListener('submit', function(e){
