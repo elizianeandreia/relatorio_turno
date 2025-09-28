@@ -157,14 +157,21 @@ document.addEventListener('DOMContentLoaded', function() {
       const rg = box.querySelector("input[placeholder='RG']")?.value || "";
       const cpf = box.querySelector("input[placeholder='CPF']")?.value || "";
       const oc = box.querySelector("textarea[placeholder='Ocorrência']")?.value || "";
-      const bloco = `MORADOR: ${mor} | CASA: ${ca} | ESTABELECIMENTO: ${es} | VISITANTE: ${vi} | RG: ${rg} | CPF: ${cpf} | OCORRÊNCIA: ${oc}`;
+      const bloco = `------------------------------------
+MORADOR: ${mor}
+CASA: ${ca}
+ESTABELECIMENTO: ${es}
+VISITANTE: ${vi}
+RG: ${rg}
+CPF: ${cpf}
+OCORRÊNCIA: ${oc}
+------------------------------------`;
       result.push(bloco);
     });
     return result;
   }
 
   function coletarOcorrencias() {
-   
     return coletarOcorrenciasArray().join("\n\n");
   }
 
@@ -200,7 +207,7 @@ if ($id('exportCSV')) {
       dataRelatorioCSV = `${partes[2]}-${partes[1]}-${partes[0]}`;
     }
 
-    const responsavel = "Wagner Toshio";
+    const responsavel = "Wagner Mori";
     linhas.push(["Data", dataRelatorioCSV]);
     linhas.push(["Responsável", responsavel]);
     linhas.push([]);
