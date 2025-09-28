@@ -220,8 +220,12 @@ ${lista}
     doc.save(`Relatorio_Turno_${data}.pdf`)
   })
 
-  if($id('exportCSV')) $id('exportCSV').addEventListener('click', function(){
-    const linhas = []
+if($id('exportCSV')) $id('exportCSV').addEventListener('click', function(){
+    const linhas = [];
+    const dataRelatorio = document.querySelector('input[type="date"]').value || "";
+    const responsavel = "Wagner Toshio";
+    linhas.push(["Data", dataRelatorio]);
+    linhas.push(["Responsável", responsavel]);
     linhas.push(["Seção","Conteúdo"])
     linhas.push(["Sinais", coletarLista('sinais')])
     linhas.push(["Encomenda Entrada", coletarLista('listaEntrada')])
