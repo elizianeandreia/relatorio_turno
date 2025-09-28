@@ -177,7 +177,7 @@ document.addEventListener('DOMContentLoaded', function() {
     return coletarOcorrenciasArray().join("\n\n");
   }
 
-  // Exportação CSV corrigida
+  
   if ($id('exportCSV')) {
     $id('exportCSV').addEventListener('click', function () {
       const linhas = [];
@@ -270,7 +270,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if($id('novaOcorrencia')) adicionarOcorrencia()
   })
 
-  // LocalStorage para salvar campos do formulário
+
   if($id('relatorioForm')) {
     $id('relatorioForm').addEventListener('input', () => {
       const data = new FormData($id('relatorioForm'));
@@ -279,7 +279,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  // Carregar dados salvos do localStorage
+
   const saved = localStorage.getItem('relatorio');
   if (saved) {
     const obj = JSON.parse(saved);
