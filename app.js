@@ -225,26 +225,44 @@ ${lista}
   dataRelatorio = `${partes[2]}-${partes[1]}-${partes[0]}`; // dd-mm-aaaa
 }
 
+
 if($id('exportCSV')) $id('exportCSV').addEventListener('click', function(){
     const linhas = [];
-    const dataRelatorio = document.querySelector('input[type="date"]').value || "";
+
+  
+    let dataRelatorio = document.querySelector('input[type="date"]').value || "";
+
+    
+    if (dataRelatorio) {
+      const partes = dataRelatorio.split('-'); 
+      dataRelatorio = `${partes[2]}-${partes[1]}-${partes[0]}`;
+    }
+
     const responsavel = "Wagner Toshio";
+
     linhas.push(["Data", dataRelatorio]);
     linhas.push(["Responsável", responsavel]);
-    linhas.push(["Seção","Conteúdo"])
-    linhas.push(["Sinais", coletarLista('sinais')])
-    linhas.push(["Encomenda Entrada", coletarLista('listaEntrada')])
-    linhas.push(["Encomenda na Portaria", coletarLista('listaPortaria')])
-    linhas.push(["Encomenda Saída", coletarLista('listaSaida')])
-    linhas.push(["Chaves", coletarLista('listaChaves')])
-    linhas.push(["WhatsApp", coletarLista('listaWhats')])
-    linhas.push(["Ocorrências", coletarOcorrencias()])
-    linhas.push(["Convidados", coletarConvidados()])
-    let csv = ""
-    linhas.forEach(l=>{ csv += l.map(c=>`"${(c||"").toString().replace(/"/g,'""')}"`).join(",") + "\n" })
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" })
-    const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = "Relatorio_Turno.csv"; link.click()
-  })
+    linhas.push(["Seção","Conteúdo"]);
+    linhas.push(["Sinais", coletarLista('sinais')]);
+    linhas.push(["Encomenda Entrada", coletarLista('listaEntrada')]);
+    linhas.push(["Encomenda na Portaria", coletarLista('listaPortaria')]);
+    linhas.push(["Encomenda Saída", coletarLista('listaSaida')]);
+    linhas.push(["Chaves", coletarLista('listaChaves')]);
+    linhas.push(["WhatsApp", coletarLista('listaWhats')]);
+    linhas.push(["Ocorrências", coletarOcorrencias()]);
+    linhas.push(["Convidados", coletarConvidados()]);
+
+    let csv = "";
+    linhas.forEach(l=>{
+      csv += l.map(c=>`"${(c||"").toString().replace(/"/g,'""')}"`).join(",") + "\n";
+    });
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = "Relatorio_Turno.csv";
+    link.click();
+});
+
 
   if($id('relatorioForm')) $id('relatorioForm').addEventListener('submit', function(e){
     e.preventDefault()
