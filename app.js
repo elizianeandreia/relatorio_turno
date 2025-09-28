@@ -168,7 +168,7 @@ OCORRÊNCIA: ${oc}
 ------------------------------------`;
       result.push(bloco);
     });
-    return result;
+    return result.join("\n\n");
   }
 
   function coletarOcorrencias() {
