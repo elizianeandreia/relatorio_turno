@@ -220,6 +220,11 @@ ${lista}
     doc.save(`Relatorio_Turno_${data}.pdf`)
   })
 
+  if (dataRelatorio) {
+  const partes = dataRelatorio.split('-'); // [aaaa, mm, dd]
+  dataRelatorio = `${partes[2]}-${partes[1]}-${partes[0]}`; // dd-mm-aaaa
+}
+
 if($id('exportCSV')) $id('exportCSV').addEventListener('click', function(){
     const linhas = [];
     const dataRelatorio = document.querySelector('input[type="date"]').value || "";
