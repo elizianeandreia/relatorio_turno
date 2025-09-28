@@ -157,7 +157,6 @@ document.addEventListener('DOMContentLoaded', function() {
       const rg = box.querySelector("input[placeholder='RG']")?.value || "";
       const cpf = box.querySelector("input[placeholder='CPF']")?.value || "";
       const oc = box.querySelector("textarea[placeholder='Ocorrência']")?.value || "";
-      
       const bloco = [
         "------------------------------------",
         `MORADOR: ${mor}`,
@@ -175,100 +174,85 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function coletarOcorrencias() {
-   
     return coletarOcorrenciasArray().join("\n\n");
   }
 
-  function coletarConvidados(){
-    const items = []
-    document.querySelectorAll("#convidadosContainer .morador-block").forEach(div=>{
-      const mor = div.querySelector("input[placeholder='Morador']")?.value||""
-      const ca = div.querySelector("input[placeholder='Casa']")?.value||""
-      const lo = div.querySelector("input[placeholder='Local']")?.value||""
-      const lista = Array.from(div.querySelectorAll("ul.convidados-list li")).map(li=>li.innerText.replace('❌','').trim()).join("\n")
-      const bloco = `------------------------------------
-MORADOR: ${mor}
-CASA: ${ca}
-LISTA DE CONVIDADOS - Local: ${lo}
-${lista}
-------------------------------------`
-      items.push(bloco)
-    })
-    return items.join("\n\n")
+  // Exportação CSV corrigida
+  if ($id('exportCSV')) {
+    $id('exportCSV').addEventListener('click', function () {
+      const linhas = [];
+      let dataRelatorioCSV = document.querySelector('input[type="date"]')?.value || "";
+      if (dataRelatorioCSV) {
+        const partes = dataRelatorioCSV.split('-');
+        dataRelatorioCSV = `${partes[2]}-${partes[1]}-${partes[0]}`;
+      }
+      const responsavel = "Wagner Mori";
+      linhas.push(["Data", dataRelatorioCSV]);
+      linhas.push(["Responsável", responsavel]);
+      linhas.push([]);
+      linhas.push(["Seção", "Conteúdo"]);
+
+      function adicionaBlocoCSV(titulo, conteudo) {
+        if (!conteudo) return;
+        const linhasConteudo = conteudo.split("\n").filter(Boolean);
+        linhas.push([titulo, linhasConteudo.shift() || ""]);
+        linhasConteudo.forEach(l => linhas.push(["", l]));
+      }
+
+      adicionaBlocoCSV("Sinais", coletarLista('sinais'));
+      adicionaBlocoCSV("Encomenda Entrada", coletarLista('listaEntrada'));
+      adicionaBlocoCSV("Encomenda na Portaria", coletarLista('listaPortaria'));
+      adicionaBlocoCSV("Encomenda Saída", coletarLista('listaSaida'));
+      adicionaBlocoCSV("Chaves", coletarLista('listaChaves'));
+      adicionaBlocoCSV("WhatsApp", coletarLista('listaWhats'));
+
+      const ocorrencias = coletarOcorrencias();
+      if (ocorrencias) {
+        const partes = ocorrencias.split("\n").filter(Boolean);
+        linhas.push(["Ocorrências", ""]);
+        partes.forEach(l => linhas.push(["", l]));
+        linhas.push(["", ""]);
+      }
+
+      const convidadosBlocos = [];
+      document.querySelectorAll("#convidadosContainer .morador-block").forEach(div => {
+        const mor = div.querySelector("input[placeholder='Morador']")?.value || "";
+        const ca = div.querySelector("input[placeholder='Casa']")?.value || "";
+        const lo = div.querySelector("input[placeholder='Local']")?.value || "";
+        const lista = Array.from(div.querySelectorAll("ul.convidados-list li"))
+          .map(li => li.innerText.replace('❌', '').trim())
+          .filter(Boolean);
+
+        if (mor || ca || lo || lista.length) {
+          convidadosBlocos.push({ mor, ca, lo, lista });
+        }
+      });
+
+      if (convidadosBlocos.length) {
+        linhas.push(["Convidados", ""]);
+        convidadosBlocos.forEach(bloco => {
+          linhas.push([`Morador: ${bloco.mor}`, `Casa: ${bloco.ca} | Local: ${bloco.lo}`]);
+          bloco.lista.forEach(convidado => {
+            linhas.push(["", convidado]);
+          });
+          linhas.push(["", ""]);
+        });
+      }
+
+      let csv = "";
+      linhas.forEach(l => {
+        csv += l.map(c => `"${(c || "").toString().replace(/"/g, '""')}"`).join(",") + "\n";
+      });
+
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = "Relatorio_Turno.csv";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
   }
-
-  
-
-
-if ($id('exportCSV')) {
-  $id('exportCSV').addEventListener('click', function () {
-    const linhas = [];
-
-    
-    let dataRelatorioCSV = document.querySelector('input[type="date"]')?.value || "";
-    if (dataRelatorioCSV) {
-      const partes = dataRelatorioCSV.split('-');
-      dataRelatorioCSV = `${partes[2]}-${partes[1]}-${partes[0]}`;
-    }
-
-    const responsavel = "Wagner Mori";
-    linhas.push(["Data", dataRelatorioCSV]);
-    linhas.push(["Responsável", responsavel]);
-    linhas.push([]);
-    linhas.push(["Seção", "Conteúdo"]);
-
-    const limpa = txt => (txt || "").split("\n").map(t => t.trim()).filter(Boolean).join(" | ");
-    linhas.push(["Sinais", limpa(coletarLista('sinais'))]);
-    linhas.push(["Encomenda Entrada", limpa(coletarLista('listaEntrada'))]);
-    linhas.push(["Encomenda na Portaria", limpa(coletarLista('listaPortaria'))]);
-    linhas.push(["Encomenda Saída", limpa(coletarLista('listaSaida'))]);
-    linhas.push(["Chaves", limpa(coletarLista('listaChaves'))]);
-    linhas.push(["WhatsApp", limpa(coletarLista('listaWhats'))]);
-    linhas.push(["Ocorrências", limpa(coletarOcorrencias())]);
-
-   
-    const convidadosBlocos = [];
-    document.querySelectorAll("#convidadosContainer .morador-block").forEach(div => {
-      const mor = div.querySelector("input[placeholder='Morador']")?.value || "";
-      const ca = div.querySelector("input[placeholder='Casa']")?.value || "";
-      const lo = div.querySelector("input[placeholder='Local']")?.value || "";
-      const lista = Array.from(div.querySelectorAll("ul.convidados-list li"))
-      .map(li => li.innerText.replace('❌', '').trim())
-      .filter(Boolean);
-      if (mor || ca || lo || lista.length) {
-      convidadosBlocos.push({ mor, ca, lo, lista });
-      }
-    });
-
-    if (convidadosBlocos.length) {
-      linhas.push(["Convidados", ""]);
-      convidadosBlocos.forEach((bloco, idx) => {
-      linhas.push([`Morador: ${bloco.mor}`, `Casa: ${bloco.ca} | Local: ${bloco.lo}`]);
-      bloco.lista.forEach(convidado => {
-        linhas.push(["", convidado]);
-      });
-      if (idx < convidadosBlocos.length - 1) {
-        linhas.push(["", ""]); 
-      }
-      });
-    }
-
-    let csv = "";
-    linhas.forEach(l => {
-      csv += l.map(c => `"${(c || "").toString().replace(/"/g, '""')}"`).join(",") + "\n";
-    });
-
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = "Relatorio_Turno.csv";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  });
-}
-
-
 
   if($id('relatorioForm')) $id('relatorioForm').addEventListener('submit', function(e){
     e.preventDefault()
@@ -285,17 +269,17 @@ if ($id('exportCSV')) {
     if($id('novoMoradorConvidados')) adicionarMorador()
     if($id('novaOcorrencia')) adicionarOcorrencia()
   })
-})
 
+  // LocalStorage para salvar campos do formulário
+  if($id('relatorioForm')) {
+    $id('relatorioForm').addEventListener('input', () => {
+      const data = new FormData($id('relatorioForm'));
+      const obj = Object.fromEntries(data.entries());
+      localStorage.setItem('relatorio', JSON.stringify(obj));
+    });
+  }
 
-document.getElementById('relatorioForm').addEventListener('input', () => {
-  const data = new FormData(document.getElementById('relatorioForm'));
-  const obj = Object.fromEntries(data.entries());
-  localStorage.setItem('relatorio', JSON.stringify(obj));
-});
-
-
-document.addEventListener('DOMContentLoaded', () => {
+  // Carregar dados salvos do localStorage
   const saved = localStorage.getItem('relatorio');
   if (saved) {
     const obj = JSON.parse(saved);
