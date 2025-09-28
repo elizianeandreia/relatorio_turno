@@ -147,28 +147,25 @@ document.addEventListener('DOMContentLoaded', function() {
     return Array.from(el.children).map(li => li.innerText.replace('❌','').trim()).join("\n")
   }
 
-  function coletarOcorrencias(){
-    const result = []
-    document.querySelectorAll("#ocorrenciasContainer .ocorrencia-box").forEach(box=>{
-      const mor = box.querySelector("input[placeholder='Morador']")?.value||""
-      const ca = box.querySelector("input[placeholder='Casa']")?.value||""
-      const es = box.querySelector("input[placeholder='Estabelecimento']")?.value||""
-      const vi = box.querySelector("input[placeholder='Visitante']")?.value||""
-      const rg = box.querySelector("input[placeholder='RG']")?.value||""
-      const cpf = box.querySelector("input[placeholder='CPF']")?.value||""
-      const oc = box.querySelector("textarea[placeholder='Ocorrência']")?.value||""
-      const bloco = `------------------------------------
-MORADOR: ${mor}
-CASA: ${ca}
-ESTABELECIMENTO: ${es}
-VISITANTE: ${vi}
-RG: ${rg}
-CPF: ${cpf}
-OCORRÊNCIA: ${oc}
-------------------------------------`
-      result.push(bloco)
-    })
-    return result.join("\n\n")
+  function coletarOcorrenciasArray() {
+    const result = [];
+    document.querySelectorAll("#ocorrenciasContainer .ocorrencia-box").forEach(box => {
+      const mor = box.querySelector("input[placeholder='Morador']")?.value || "";
+      const ca = box.querySelector("input[placeholder='Casa']")?.value || "";
+      const es = box.querySelector("input[placeholder='Estabelecimento']")?.value || "";
+      const vi = box.querySelector("input[placeholder='Visitante']")?.value || "";
+      const rg = box.querySelector("input[placeholder='RG']")?.value || "";
+      const cpf = box.querySelector("input[placeholder='CPF']")?.value || "";
+      const oc = box.querySelector("textarea[placeholder='Ocorrência']")?.value || "";
+      const bloco = `MORADOR: ${mor} | CASA: ${ca} | ESTABELECIMENTO: ${es} | VISITANTE: ${vi} | RG: ${rg} | CPF: ${cpf} | OCORRÊNCIA: ${oc}`;
+      result.push(bloco);
+    });
+    return result;
+  }
+
+  function coletarOcorrencias() {
+   
+    return coletarOcorrenciasArray().join("\n\n");
   }
 
   function coletarConvidados(){
@@ -189,38 +186,7 @@ ${lista}
     return items.join("\n\n")
   }
 
-  if($id('exportPDF')) $id('exportPDF').addEventListener('click', function(){
-    const { jsPDF } = window.jspdf || {}
-    if(!jsPDF){ alert('jsPDF não carregado'); return }
-    const doc = new jsPDF()
-    const data = new Date().toLocaleDateString("pt-BR")
-    doc.setFont("times","normal")
-    doc.setFontSize(18); doc.text("Relatório de Turno",105,20,{align:'center'})
-    doc.setFontSize(12); doc.text("Emitido por: Wagner Toshio Mori",14,30); doc.text(`Data: ${data}`,14,38)
-    let y = 50
-    const limpa = txt => (txt||"").split("\n").map(t=>t.trim()).filter(Boolean).join("\n")
-    const sections = [
-      {titulo:"SINAIS", conteudo:limpa(coletarLista('sinais'))},
-      {titulo:"ENCOMENDA ENTRADA", conteudo:limpa(coletarLista('listaEntrada'))},
-      {titulo:"ENCOMENDA NA PORTARIA", conteudo:limpa(coletarLista('listaPortaria'))},
-      {titulo:"ENCOMENDA SAÍDA", conteudo:limpa(coletarLista('listaSaida'))},
-      {titulo:"CHAVES", conteudo:limpa(coletarLista('listaChaves'))},
-      {titulo:"WHATSAPP", conteudo:limpa(coletarLista('listaWhats'))},
-      {titulo:"OCORRÊNCIAS", conteudo:limpa(coletarOcorrencias())},
-      {titulo:"CONVIDADOS", conteudo:limpa(coletarConvidados())}
-    ]
-    sections.forEach(sec=>{
-      doc.setFontSize(13); doc.setTextColor(0,102,204); doc.text(sec.titulo,14,y); y+=6
-      doc.setFontSize(11); doc.setTextColor(0,0,0)
-      const texto = doc.splitTextToSize(sec.conteudo||"-",180)
-      doc.text(texto,14,y)
-      y += texto.length*6 + 6
-      if(y>270){ doc.addPage(); y = 20 }
-    })
-    doc.save(`Relatorio_Turno_${data}.pdf`)
-  })
-
-
+  
 
 
 if ($id('exportCSV')) {
@@ -248,7 +214,33 @@ if ($id('exportCSV')) {
     linhas.push(["Chaves", limpa(coletarLista('listaChaves'))]);
     linhas.push(["WhatsApp", limpa(coletarLista('listaWhats'))]);
     linhas.push(["Ocorrências", limpa(coletarOcorrencias())]);
-    linhas.push(["Convidados", limpa(coletarConvidados())]);
+
+   
+    const convidadosBlocos = [];
+    document.querySelectorAll("#convidadosContainer .morador-block").forEach(div => {
+      const mor = div.querySelector("input[placeholder='Morador']")?.value || "";
+      const ca = div.querySelector("input[placeholder='Casa']")?.value || "";
+      const lo = div.querySelector("input[placeholder='Local']")?.value || "";
+      const lista = Array.from(div.querySelectorAll("ul.convidados-list li"))
+      .map(li => li.innerText.replace('❌', '').trim())
+      .filter(Boolean);
+      if (mor || ca || lo || lista.length) {
+      convidadosBlocos.push({ mor, ca, lo, lista });
+      }
+    });
+
+    if (convidadosBlocos.length) {
+      linhas.push(["Convidados", ""]);
+      convidadosBlocos.forEach((bloco, idx) => {
+      linhas.push([`Morador: ${bloco.mor}`, `Casa: ${bloco.ca} | Local: ${bloco.lo}`]);
+      bloco.lista.forEach(convidado => {
+        linhas.push(["", convidado]);
+      });
+      if (idx < convidadosBlocos.length - 1) {
+        linhas.push(["", ""]); 
+      }
+      });
+    }
 
     let csv = "";
     linhas.forEach(l => {
