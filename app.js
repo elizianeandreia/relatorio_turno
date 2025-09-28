@@ -220,50 +220,50 @@ ${lista}
     doc.save(`Relatorio_Turno_${data}.pdf`)
   })
 
-  if (dataRelatorio) {
-  const partes = dataRelatorio.split('-'); // [aaaa, mm, dd]
-  dataRelatorio = `${partes[2]}-${partes[1]}-${partes[0]}`; // dd-mm-aaaa
-}
 
 
-if($id('exportCSV')) $id('exportCSV').addEventListener('click', function(){
-  const linhas = [];
 
-  let dataRelatorio = document.querySelector('input[type="date"]')?.value || "";
-  if (dataRelatorio) {
-    const partes = dataRelatorio.split('-');
-    dataRelatorio = `${partes[2]}-${partes[1]}-${partes[0]}`;
-  }
+if ($id('exportCSV')) {
+  $id('exportCSV').addEventListener('click', function () {
+    const linhas = [];
 
-  const responsavel = "Wagner Toshio";
-  linhas.push(["Data", dataRelatorio]);
-  linhas.push(["Responsável", responsavel]);
-  linhas.push([]);
-  linhas.push(["Seção","Conteúdo"]);
+    
+    let dataRelatorioCSV = document.querySelector('input[type="date"]')?.value || "";
+    if (dataRelatorioCSV) {
+      const partes = dataRelatorioCSV.split('-');
+      dataRelatorioCSV = `${partes[2]}-${partes[1]}-${partes[0]}`;
+    }
 
-  const limpa = txt => (txt||"").split("\n").map(t=>t.trim()).filter(Boolean).join(" | ");
-  linhas.push(["Sinais", limpa(coletarLista('sinais'))]);
-  linhas.push(["Encomenda Entrada", limpa(coletarLista('listaEntrada'))]);
-  linhas.push(["Encomenda na Portaria", limpa(coletarLista('listaPortaria'))]);
-  linhas.push(["Encomenda Saída", limpa(coletarLista('listaSaida'))]);
-  linhas.push(["Chaves", limpa(coletarLista('listaChaves'))]);
-  linhas.push(["WhatsApp", limpa(coletarLista('listaWhats'))]);
-  linhas.push(["Ocorrências", limpa(coletarOcorrencias())]);
-  linhas.push(["Convidados", limpa(coletarConvidados())]);
+    const responsavel = "Wagner Toshio";
+    linhas.push(["Data", dataRelatorioCSV]);
+    linhas.push(["Responsável", responsavel]);
+    linhas.push([]);
+    linhas.push(["Seção", "Conteúdo"]);
 
-  let csv = "";
-  linhas.forEach(l=>{
-    csv += l.map(c=>`"${(c||"").toString().replace(/"/g,'""')}"`).join(",") + "\n";
+    const limpa = txt => (txt || "").split("\n").map(t => t.trim()).filter(Boolean).join(" | ");
+    linhas.push(["Sinais", limpa(coletarLista('sinais'))]);
+    linhas.push(["Encomenda Entrada", limpa(coletarLista('listaEntrada'))]);
+    linhas.push(["Encomenda na Portaria", limpa(coletarLista('listaPortaria'))]);
+    linhas.push(["Encomenda Saída", limpa(coletarLista('listaSaida'))]);
+    linhas.push(["Chaves", limpa(coletarLista('listaChaves'))]);
+    linhas.push(["WhatsApp", limpa(coletarLista('listaWhats'))]);
+    linhas.push(["Ocorrências", limpa(coletarOcorrencias())]);
+    linhas.push(["Convidados", limpa(coletarConvidados())]);
+
+    let csv = "";
+    linhas.forEach(l => {
+      csv += l.map(c => `"${(c || "").toString().replace(/"/g, '""')}"`).join(",") + "\n";
+    });
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = "Relatorio_Turno.csv";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   });
-
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = "Relatorio_Turno.csv";
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-});
+}
 
 
 
