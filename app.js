@@ -157,21 +157,25 @@ document.addEventListener('DOMContentLoaded', function() {
       const rg = box.querySelector("input[placeholder='RG']")?.value || "";
       const cpf = box.querySelector("input[placeholder='CPF']")?.value || "";
       const oc = box.querySelector("textarea[placeholder='Ocorrência']")?.value || "";
-      const bloco = `------------------------------------
-MORADOR: ${mor}
-CASA: ${ca}
-ESTABELECIMENTO: ${es}
-VISITANTE: ${vi}
-RG: ${rg}
-CPF: ${cpf}
-OCORRÊNCIA: ${oc}
-------------------------------------`;
+      
+      const bloco = [
+        "------------------------------------",
+        `MORADOR: ${mor}`,
+        `CASA: ${ca}`,
+        `ESTABELECIMENTO: ${es}`,
+        `VISITANTE: ${vi}`,
+        `RG: ${rg}`,
+        `CPF: ${cpf}`,
+        `OCORRÊNCIA: ${oc}`,
+        "------------------------------------"
+      ].join("\n");
       result.push(bloco);
     });
-    return result.join("\n\n");
+    return result;
   }
 
   function coletarOcorrencias() {
+   
     return coletarOcorrenciasArray().join("\n\n");
   }
 
